@@ -1,0 +1,6 @@
+[package]
+name = "killline"
+version = "0.1.0"
+authors = ["Camden Narzt <c.narzt@me.com>"]
+
+[dependencies]
