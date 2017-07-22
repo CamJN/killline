@@ -5,20 +5,26 @@ use std::env;
 use std::path;
 
 fn main() {
+    let default = "Failed to get panic message.".to_string();
+    std::panic::set_hook(Box::new(move |p|{
+        eprintln!("{}",p.payload().downcast_ref::<std::string::String>().unwrap_or(&default));
+        std::process::exit(-1);
+    }));
+
     let stdin = io::stdin();
     let stdout = io::stdout();
     let mut args = env::args().skip(1).peekable();//skip executable name
     let name:Option<path::PathBuf> = args.peek().map(path::PathBuf::from);
 
     let mut f = name.as_ref().and_then(|path| if path.is_file() {
-	fs::File::open(path).ok()
+        fs::File::open(path).ok()
     }else{
-	None
+        None
     });
-    
+
     let input : Box<io::BufRead> = match f {
         Some(f) => {
-	    args.next();//skip file name
+            args.next();//skip file name
             Box::new(io::BufReader::new(f))
         },
         None => Box::new(stdin.lock())
@@ -30,7 +36,7 @@ fn main() {
     f = name.as_ref().and_then(|path| if path.is_file() {
         fs::File::create(path).ok()
     }else{
-	None
+        None
     });
 
     let mut output: Box<io::Write> = match f {
